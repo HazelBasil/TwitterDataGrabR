@@ -1,3 +1,6 @@
+
+
+
 ##This R script is the basic twitter data capture guidlines.
 
 #Install twitterR, RCurl, ROAuth before starting. 
@@ -6,7 +9,7 @@ require(twitteR)
 require(RCurl)
 require(ROAuth)
 
-#Call the Twitter API keys
+#Call the Twitter API keys (Generate own set of keys via apps.twitter.com)
 consumer_key <- ''
 consumer_secret <- ''
 access_token <- ''
@@ -18,26 +21,37 @@ setup_twitter_oauth(consumer_key, consumer_secret, access_token, access_secret)
 ###up to you, but I simply said Yes (=1).
 
 #get tweets by searchTwitter function
-#Use Advanced search function from Twitter if you want to specify more search parameters
-##The user -tweet merge can be easily done upto around 15000 tweets.
-tweet <- searchTwitter("SearchKeyword SpecificParameter", n=15000, lang = "en"  )
+#Use "Advanced search function" (copy & paste) from Twitter if you want to specify more search parameters
+tweetdata <- searchTwitter("search parameter", n= xxxx, lang = "en"  )
 
 #Convert the list to dataframe
-tweetdf <- twListToDF(tweet)
+tweetdf <- twListToDF(tweetdata)
 
 #Get user information by UserInfo function
-user <- lookupUsers(tweetdf$screenName)
-#If want to check the length of user names list
-length(user)
+userdata <- lookupUsers(tweetdf$screenName, includeNA = F)
+##If want to check the length of user names list
+length(userdata)
+head(userdata)
+###create user info dataframe
+userdf <- twListToDF(userdata) 
 
-#convert the list to dataframe
-userdf <- twListToDF(user) 
+#If userlist is too long
+userdata1 <- lookupUsers(tweetdf$screenName[1:xxxx], includeNA=F)
+userdata2 <- lookupUsers(tweetdf$screenName[xxx1:xxxx], includeNA=F)
+##and go on until you get all the rows of users in tweetdf
+###Then, convert them into dataframes
+userdf1 <- twListToDF(userdata1)
+userdf2 <- twListToDF(userdata2)
+....
+####comined the user dataframes
+userdf <- rbind(userdf1, userdf2, ...)
 
-#Merge the two by joining
-tweet_final <- merge(tweetdf, userdf, by = "screenName")
 
-#Save it into csv format
-##for MAC
-write.csv(tweet_final, "path/tweet_final.csv", row.names = F)
-##for PC
-write.csv(tweet_final, "path\tweet_final.csv", row.names = F)
+#Merge the two by joining 
+Final <- merge(tweetdf, userdf, by = "screenName")
+
+#Save it into csv format.
+#MAC
+write.csv(Final, "/path/name.csv", row.names = F)
+#PC
+write.csv(Final, "path\name.csv", row.names = F)
