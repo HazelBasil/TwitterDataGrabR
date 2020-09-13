@@ -1,0 +1,4 @@
+####Read json Tweet data into R dataframe  
+fileprefix = "file.json"
+tweets <- t2DataFrame(fileprefix) 
+
